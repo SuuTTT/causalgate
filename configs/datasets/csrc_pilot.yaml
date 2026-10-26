@@ -1,0 +1,18 @@
+# Overlay (no _base_): CSRC administrative-penalty decisions (HQ, 2,036 decisions -> 491 auto-extracted trading cases) on the
+# full, delisting-inclusive A-share universe from Baostock (suspension + ST flags, back-adjusted prices). PILOT: anchors are
+# AUTO-EXTRACTED (scripts/data_fetch/parse_csrc.py, spot-check precision ~13/15 stocks, ~9-11/15 tight windows) and must be
+# human-verified before publication. Primary anchor set = windows <= 365 days ("tight").
+experiment: {name: csrc_pilot}
+dataset:
+  name: daily_bars
+  path: data/ashare_bs/daily_bars.csv
+  market: cn
+  start: "2008-01-01"
+  min_obs: 250
+  capital_per_slot: 1.0e+5
+  anchors: {path: data/csrc/csrc_anchors_tight.csv}
+label_budget: {lead: 5, neg_margin: 60, n_cal: 0.005, cal_block: 20, k_values: [1, 3, 10, 30, null]}
+splits: {train: 1215, val: 243, test: 243, step: 243, purge: 25, embargo: 5, max_folds: null}
+data: {lookback: 64, unlabeled_subsample: 0.02, batch_size: 1024}
+eval: {borrow_bps_annual: 800, n_perm: 100, n_boot: 300}
+backtest: {bps_grid: [5, 15, 30]}

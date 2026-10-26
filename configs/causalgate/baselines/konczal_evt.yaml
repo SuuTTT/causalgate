@@ -1,0 +1,27 @@
+# B10 Konczal & Poloczanski, arXiv:2608.09576 (2026) -- causalgate/baselines/b10_konczal_evt.py
+# EVT (POT / GPD) threshold fitted on the training sample + one-bar-ahead GBM prediction of the indicator; the trade loop is ours.
+name: cg_konczal_evt
+mode: causal                          # published | causal
+lookback: 48                          # the paper's rolling windows (1440 bars, 120-bar z-score) are clipped to the look-back
+latency: 1
+hold_index: 2
+n_exec: 4
+w_max: 1.0
+bars_per_year: 252
+seed: 0
+published_norm: train                 # no normalisation stated; inert (raw feature window, tree model)
+published_threshold: best_f1_test     # the paper reports precision / recall at the F1-optimal threshold computed on the TEST set
+f1_labels: indicator                  # F1-optimal against the paper's indicator labels of the test rows (planted = dataset labels)
+evt_sample: train                     # train (what the paper does, both modes) | full_sample (leaky one-switch variant, published mode only)
+evt_pooled: false                     # per-asset GPD fits (the paper fits per instrument)
+u_quantile: 0.95                      # u = 95th percentile of training losses
+p_tail: 0.01                          # tail probability of the GPD quantile (Eq. 3)
+rolling_quantile: 0.01                # rolling 1 % return quantile for D^MR / D^NR (window-clipped)
+K: 10                                 # no-recovery horizon (label only)
+recovery_frac: 0.3
+target: any                           # pot | mr | nr | any  (D^ANY = OR of the indicators)
+clf: hgb                              # hgb (HistGradientBoosting stand-in for XGBoost / LightGBM) | logistic
+max_iter: 60
+max_depth: 3
+normaliser: {mode: welford, warmup: 60}
+gate: {type: delayed_aci, alpha: 0.05, gamma: 0.02, window: 500}

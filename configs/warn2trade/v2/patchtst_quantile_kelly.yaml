@@ -1,0 +1,9 @@
+_base_: warn2trade.yaml
+# PatchTST price-only quantile forecaster + Kelly/CVaR rule
+model:
+  tag: patchtst_quantile_kelly
+  ablation: {label_free: true, plugin_policy: true, no_text: true, no_graph: true, no_lob: true}
+  policy: {a_min: 0.0}
+train:
+  stages:
+    - {name: extrap, modules: [detector, extrapolator], epochs: 10, lr: 5.0e-4, losses: {imp: 1.0, liq: 0.5}}

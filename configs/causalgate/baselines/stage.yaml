@@ -1,0 +1,26 @@
+# B8 STAGE -- Shi, Rasli, Wang, PLOS ONE 2025 (doi:10.1371/journal.pone.0318939) -- causalgate/baselines/b8_stage.py
+# Protocol-ambiguous baseline: Eq. 20 (tau = mu_S + delta sigma_S) does not say which sample mu_S / sigma_S come from.
+# Smoke sizes; the paper states only 'epochs: 20' in the text (Table 2 values are not printed).
+name: cg_stage
+mode: causal                          # published | causal
+lookback: 48
+latency: 1
+hold_index: 2
+n_exec: 4
+w_max: 1.0
+bars_per_year: 252
+seed: 0
+published_norm: global                # not stated in the paper: the common offline reading (whole-panel z-score)
+published_threshold: train_mean_std   # placeholder kind; B8 uses `stage_reading` instead
+stage_reading: test_fold              # full_sample | test_fold | train_fold  (the three readings of Eq. 20)
+stage_delta: 2.0                      # 'adjustment parameter' delta of Eq. 20: value not stated
+normaliser: {mode: welford, warmup: 60}
+gate: {type: delayed_aci, alpha: 0.05, gamma: 0.02, window: 500}
+graph: {window: 60, k: 2}             # kNN on the rolling correlation of the past 60 bars of returns (construction not stated)
+gat: {d: 16}                          # one layer, one head (not stated)
+vae: {hidden: 16, latent: 4, kl_weight: 0.1}
+node_bars: 48                         # node input = the asset's last 48 bars of features, flattened
+epochs: 2                             # paper: 20
+lr: 1.0e-3
+batch_size: 64
+trend: {short: 5, long: 20}           # MA-crossover stand-in for the (undescribed) trend module

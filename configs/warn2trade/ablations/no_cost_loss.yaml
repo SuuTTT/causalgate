@@ -1,0 +1,10 @@
+_base_: ../model.yaml
+# Removes the cost-aware signal from the loop: plain BCE (rho = 0) and a cost-free surrogate during training.
+# Evaluation still charges the full cost model, so this measures how much the loss/utility alignment is worth.
+model:
+  tag: ablation_no_cost_loss
+train:
+  loss: {rho: 0.0}
+cost: {commission_bps: 0.0, use_half_spread: false, impact_eta: 0.0, delay_zeta: 0.0}
+eval:
+  cost_grid_bps: [1, 5, 10, 15, 30]

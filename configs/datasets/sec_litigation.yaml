@@ -1,0 +1,16 @@
+# Overlay (no _base_): SEC litigation releases (pump-and-dump, matched / wash trades) on a delisting- AND OTC-inclusive US
+# daily panel (CRSP via WRDS if licensed; otherwise Sharadar / EODHD / Polygon incl. OTC). An S&P 500 or Qlib universe
+# cannot contain the manipulated issuers. Insider-trading cases are detection-only (no trade).
+experiment: {name: sec_litigation}
+dataset:
+  name: daily_bars
+  path: data_raw/us_otc/daily_bars.csv
+  market: us
+  start: "2008-01-01"
+  min_obs: 120
+  capital_per_slot: 2.5e+4
+  hs_k: 0.08                        # wider spreads for OTC names
+  anchors: {path: data_raw/anchors/sec_litigation_anchors.csv}
+label_budget: {lead: 5, neg_margin: 60, n_cal: 0.1, cal_block: 10}
+splits: {train: 1260, val: 252, test: 252, step: 252, purge: 25, embargo: 5, max_folds: null}
+eval: {borrow_bps_annual: 2500}      # hard-to-borrow micro-caps; the fade leg is reported, the overlay is the headline

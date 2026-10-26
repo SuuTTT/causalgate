@@ -1,0 +1,5 @@
+_base_: warn2trade.yaml
+# learned policy replaced by the closed-form Kelly/CVaR rule (trained the same way otherwise)
+model:
+  tag: plugin_policy
+  ablation: {plugin_policy: true}

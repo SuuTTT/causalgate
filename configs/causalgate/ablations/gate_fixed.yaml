@@ -1,0 +1,3 @@
+_base_: ../baselines/causalgate.yaml
+gate: {type: fixed, alpha: 0.05}
+ablation: gate_fixed

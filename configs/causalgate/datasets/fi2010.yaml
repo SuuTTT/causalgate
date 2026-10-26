@@ -1,0 +1,28 @@
+# D2 FI-2010 LOB (Ntakaris et al. 2018; free substitute for LOBSTER) -- causalgate/data/loaders/fi2010.py
+# Raw files: <root>/fi2010/**/Train_Dst_NoAuction_DecPre_CF_7.txt + Test_Dst_NoAuction_DecPre_CF_{7,8,9}.txt (Raw variant preferred if present)
+# LOBSTER (licensed): variant: lobster, subdir: lobster, files <TICKER>_<date>_*_orderbook_10.csv + _message_10.csv
+name: cg_fi2010
+root: data_raw
+subdir: fi2010
+variant: fi2010                  # fi2010 | lobster
+auction: NoAuction
+prefer: [raw, decpre]            # normalisation variants accepted, in order (zscore / minmax refused)
+segmentation: auto               # auto (price-jump split, jump_thresh) | list (segments: [[start, end, name], ...]) | none
+jump_thresh: 0.25
+n_assets_expected: 5
+spread_ticks_max: 20
+tick_size: null                  # null = smallest level-1 price increment per segment (DecPre units); 0.01 for lobster
+max_events: null                 # truncate the event stream (smoke runs)
+lookback: 100
+horizons: [10, 20, 30, 50, 100]  # = the FI-2010 native trend-label horizons (events)
+labels: {horizon: 50, k_ret: 3.0, k_vol: 3.0, window: 600, lead: 10}
+split: {train: 40000, val: 8000, test: 16000, step: 16000, embargo: 500}   # 93,316 sampled bars in the DecPre files -> 2 purged folds
+latency: 1                       # events; same-event fills forbidden
+bars_per_year: 2016000           # 252 days x ~8000 sampled events per stock-day (approximate)
+pit:
+  fields: [avail_feat, avail_label, universe]
+  normalisation: "DecPre (constant power-of-ten scaling; returns exact); ZScore uses prior-day statistics and is refused for price features"
+  avail_feat: "t (event index; no wall-clock timestamps in FI-2010)"
+  avail_label: "t + max(50 + lead, max(horizons)); native trend label k knowable at t + k (meta.fi2010_trend_labels)"
+  universe: "segment has an event at row t (segments stacked at row 0, not time-aligned)"
+  tradable: "spread <= 20 ticks and both level-1 quotes present"

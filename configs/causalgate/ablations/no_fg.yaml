@@ -1,0 +1,6 @@
+_base_: ../baselines/causalgate.yaml
+normaliser: {mode: welford, warmup: 60}
+# 'no Filtration Guard' = run under protocol causal+L1 (see cg_run_all.sh): the runner sets norm_mode=offline,
+# published_norm=global, and CausalGate then standardises with an OfflineScaler fitted on the whole panel; the guard
+# is non-strict and logs the L1 violation (before 2026-10 CausalGate ignored these keys and this row equalled the default).
+ablation: no_fg

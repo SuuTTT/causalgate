@@ -1,0 +1,5 @@
+_base_: ../baselines/causalgate.yaml
+# periodic: every refit_every decision bars the TCN is fine-tuned (refit_epochs) on the trailing <= refit_window past
+# windows ending <= the decision bar - refit_purge, then re-stamped (implemented 2026-10; earlier runs equalled static)
+scorer: {type: tcn, hidden: 32, n_layers: 4, epochs: 5, refit_policy: periodic, refit_every: 250, refit_window: 5000, refit_epochs: 1, refit_purge: 0}
+ablation: refit_periodic

@@ -1,0 +1,5 @@
+name: csi300_limit
+root: data_raw
+limit_pct: 0.10
+horizons: [1, 2, 3, 5, 10, 20]
+split: {train: 1000, val: 120, test: 240, step: 240, embargo: 10}

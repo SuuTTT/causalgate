@@ -1,0 +1,53 @@
+# Warn2Trade defaults (namespaced under configs/warn2trade/ so that other experiment tracks sharing this checkout cannot
+# clobber them). Dataset files override `horizons` and `split`; model files override `model`; CLI --override wins.
+deterministic: true
+device: auto
+
+data:
+  lookback: 64          # bars fed to the price / LOB encoders
+  latency: 1            # decision at bar t, fill at close of t + latency (>= 1)
+  exec_max: 4           # max TWAP schedule length (bars)
+  vol_window: 60
+  neg_subsample: 0.25   # keep this fraction of normal bars in TRAIN only; val/test keep everything
+  num_workers: 0
+
+split:                  # purged, embargoed walk-forward (bars); purge is raised to >= max(horizon)+latency+exec_max automatically
+  train: 1200
+  val: 200
+  test: 400
+  step: 400
+  purge: 0
+  embargo: 20
+  anchored: false
+  max_folds: null
+
+cost:
+  commission_bps: 5.0
+  use_half_spread: true
+  impact_eta: 0.1
+  delay_zeta: 0.05
+  notional: 0.05        # strategy notional as a fraction of the asset's ADV (participation = |dw| * notional / adv_frac)
+
+eval:
+  cost_grid_bps: [1, 5, 10, 15, 30]   # robustness sweep; the model is trained at cost.commission_bps only
+  k_frac: 0.01
+
+train:
+  batch_size: 256
+  weight_decay: 1.0e-4
+  grad_clip: 1.0
+  patience: 3
+  loss:
+    rho: 2.0            # executable-alpha up-weighting strength in L_det (0 = plain BCE)
+    pos_weight: 3.0
+    imp_floor: 0.1
+    lam_down: 1.0       # downside (LPM2) penalty in U
+    lam_cvar: 0.5       # CVaR penalty in U
+    alpha: 0.05
+    pnl_scale: 100.0    # utility computed on PnL in percent
+    dir: 1.0            # direction auxiliary loss weight on the detector latent (see losses.direction_loss)
+  stages:
+    - {name: detect,  modules: [detector],                        epochs: 4, lr: 3.0e-4, losses: {det: 1.0, dir: 1.0, svdd: 0.1}}
+    - {name: extrap,  modules: [detector, extrapolator],          epochs: 6, lr: 5.0e-4, detach_upstream: false, losses: {det: 1.0, dir: 1.0, imp: 1.0, liq: 0.5, peak: 0.5}}
+    - {name: policy,  modules: [policy],                          epochs: 6, lr: 1.0e-3, detach_upstream: true, losses: {utility: 1.0, turnover: 0.001}}
+    - {name: e2e,     modules: [detector, extrapolator, policy],  epochs: 4, lr: 1.0e-4, losses: {det: 1.0, dir: 1.0, svdd: 0.1, imp: 1.0, liq: 0.5, peak: 0.5, utility: 1.0, turnover: 0.001}}

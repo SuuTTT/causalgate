@@ -1,0 +1,3 @@
+_base_: ../baselines/causalgate.yaml
+policy: {type: learned, epochs: 3, lr: 1.0e-3, hidden: 64}
+ablation: policy_learned

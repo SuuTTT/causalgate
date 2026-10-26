@@ -1,0 +1,34 @@
+# B1 CPD-DMN -- Wood, Roberts, Zohren, JFDS 2022 (arXiv:2105.13727) -- causalgate/baselines/b1_cpd_dmn.py
+# Smoke sizes (tests/causalgate_parts/test_baselines_reimpl.py loads this file); the paper's sizes are in the comments.
+name: cg_cpd_dmn
+mode: causal                          # published | causal
+lookback: 48                          # LSTM sequence length (paper: 63, App. B)
+latency: 1
+hold_index: 2
+n_exec: 4
+w_max: 1.0
+bars_per_year: 252
+seed: 0
+published_norm: train                 # official code: StandardScaler fitted on the training split (mom_trans/model_inputs.py); inert (B1 reads raw returns)
+published_threshold: train_quantile   # unused while always_in_market is true
+always_in_market: true                # published mode: a position is taken every day (Sec. IV-A); causal mode: delayed-ACI gate on the CPD severity
+normaliser: {mode: welford, warmup: 60}
+gate: {type: delayed_aci, alpha: 0.05, gamma: 0.02, window: 500}
+cpd:
+  lbw: 21                             # paper: l in {10, 21, 63, 126, 252}, chosen on validation
+  lengthscales: [2.0, 8.0]            # Matern-3/2 input-scale grid (paper: L-BFGS-B initialised at 1)
+  noise_ratios: [0.3, 1.0, 3.0]       # sigma_n^2 / sigma_h^2 grid
+  scale_ratios: [0.25, 1.0, 4.0]      # output-scale ratio of the second region kernel (volatility change-points)
+  steepness: [1.0]                    # paper initialises s = 1 and optimises it
+  loc_step: 1                         # every interior location c in (t - l, t)
+dmn:
+  hidden: 8                           # paper grid: 5, 10, 20, 40, 80, 160 (Exhibit 7)
+  dropout: 0.1
+  epochs: 2                           # paper: <= 300 epochs, early-stopping patience 25 (App. B)
+  lr: 1.0e-3
+  batch_size: 256
+  vol_span: 60                        # classical_strategies.py VOL_LOOKBACK = 60 (ex-ante EWM std, lagged one day)
+  vol_target: 0.15                    # VOL_TARGET = 0.15 (Eq. 11)
+  return_scales: [1, 21, 63, 126, 252]   # scales > lookback - 1 are dropped
+  macd_pairs: [[8, 24], [16, 48], [32, 96]]
+  winsor: 5.0                         # App. B winsorisation at 5 EWM std -> clip of the standardised features

@@ -1,0 +1,7 @@
+_base_: warn2trade.yaml
+# training surrogate charges no cost; evaluation charges the full cost (see eval_cost_override)
+model:
+  tag: costfree_surrogate
+  ablation: {}
+cost: {commission_bps: 0.0, use_half_spread: false, impact_eta: 0.0, delay_zeta: 0.0}
+eval_cost_override: {commission_bps: 5.0, use_half_spread: true, impact_eta: 0.1, delay_zeta: 0.05}

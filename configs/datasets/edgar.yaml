@@ -1,0 +1,6 @@
+name: edgar
+root: data_raw
+label_source: aaer       # aaer | audit_analytics
+horizons: [1, 3, 5, 10, 20, 60]
+max_chunks: 32
+split: {train: 2000, val: 250, test: 500, step: 500, embargo: 20}

@@ -1,0 +1,5 @@
+name: qlib_alpha158
+root: data_raw
+region: us              # us | cn
+horizons: [1, 2, 3, 5, 10, 20]
+split: {train: 1200, val: 120, test: 240, step: 240, embargo: 10}

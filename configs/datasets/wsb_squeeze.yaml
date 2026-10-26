@@ -1,0 +1,5 @@
+name: wsb_squeeze
+root: data_raw
+horizons: [1, 2, 3, 5, 10, 20]
+max_posts: 16
+split: {train: 250, val: 30, test: 60, step: 60, embargo: 5}

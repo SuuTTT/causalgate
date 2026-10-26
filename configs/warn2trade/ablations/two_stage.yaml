@@ -1,0 +1,4 @@
+_base_: ../model.yaml
+model:
+  tag: ablation_two_stage
+  ablation: {two_stage: true}

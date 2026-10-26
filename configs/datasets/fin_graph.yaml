@@ -1,0 +1,5 @@
+name: fin_graph
+root: data_raw
+variant: ellipticpp
+horizons: [1, 2, 4, 8, 24, 48]
+split: {train: 6000, val: 800, test: 1600, step: 1600, embargo: 48}

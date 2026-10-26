@@ -1,0 +1,3 @@
+_base_: ../baselines/causalgate.yaml
+normaliser: {mode: welford, warmup: 2}
+ablation: no_warmup_abstain

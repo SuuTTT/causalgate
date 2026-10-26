@@ -1,0 +1,11 @@
+# CausalGate (ours): streaming normaliser -> causal scorer -> delayed-ACI gate -> policy head
+normaliser: {mode: welford, warmup: 60, halflife: 120}
+scorer: {type: tcn, hidden: 32, n_layers: 4, kernel: 3, dropout: 0.1, epochs: 5, lr: 1.0e-3, batch_size: 256, refit_policy: static, refit_every: 250}
+gate: {type: delayed_aci, alpha: 0.05, gamma: 0.01, window: 500, calib: all, tau: null, online_labels: false}   # tau null -> horizon + latency
+# online_labels: true releases each test label to the gate at its avail_label bar (matters only for calib: normal_only)
+# alpha may instead be derived from the cost budget: gate: {type: delayed_aci, budget: {annual_bps: 500, cost_bps: 10}}
+policy: {type: momentum}
+hold_index: 2
+smoke:
+  scorer: {epochs: 2, hidden: 16, n_layers: 3}
+  gate: {gamma: 0.02}

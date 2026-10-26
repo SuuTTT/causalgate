@@ -1,0 +1,36 @@
+name: published
+normalisation: global
+threshold: published
+model_selection: test
+point_adjust: true
+label_join: event_time
+universe: today
+fill: latency
+pretrained_check: false
+purge: true
+embargo: true
+detection_only: false
+seeds:
+- 42
+- 2024
+- 2025
+- 2026
+cost_grid_bps:
+- 1.0
+- 5.0
+- 10.0
+- 15.0
+- 30.0
+train_cost_bps: 5.0
+min_latency: 1
+hash: 5ab261244d255491
+offline_channels:
+- L1
+- L2
+- L3
+- L4
+- L5
+- L6
+- L8
+_note: mirror of causalgate/eval/protocols.py (source of truth); regenerate with `python3
+  -c 'from causalgate.eval.protocols import write_mirrors; write_mirrors()'` and re-freeze

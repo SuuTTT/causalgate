@@ -1,0 +1,36 @@
+# CausalGate track defaults (namespaced; never read by other tracks). Dataset yaml overrides data/split/horizons.
+deterministic: true
+device: auto
+
+data:
+  lookback: 64
+  latency: 1            # decision at t, fill at the close of t + latency (>= 1 under every causal protocol)
+  exec_max: 4
+  vol_window: 60
+  neg_subsample: null   # protocol runs never sub-sample (identical decision points for every method)
+
+split:                  # purged, embargoed walk-forward; purge is raised to >= max(horizon) + latency + exec_max
+  train: 1200
+  val: 200
+  test: 400
+  step: 400
+  purge: 0
+  embargo: 20
+  anchored: false
+  max_folds: null
+
+cost:
+  commission_bps: 5.0   # training cost; evaluation re-prices at eval.cost_grid_bps
+  use_half_spread: true
+  impact_eta: 0.1
+  delay_zeta: 0.05
+  notional: 0.05
+
+eval:
+  cost_grid_bps: [1, 5, 10, 15, 30]
+  seeds: [42, 2024, 2025, 2026]
+
+policy:
+  n_exec: 4
+  w_max: 1.0
+  hold_index: 2

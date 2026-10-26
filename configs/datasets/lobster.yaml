@@ -1,0 +1,8 @@
+name: lobster
+root: data_raw
+variant: lobster         # or fi2010
+tickers: [AAPL, MSFT, AMZN, GOOG, INTC]
+bar_ms: 100
+levels: 10
+horizons: [10, 20, 50, 100, 300, 600]
+split: {train: 150000, val: 20000, test: 30000, step: 30000, embargo: 2000}

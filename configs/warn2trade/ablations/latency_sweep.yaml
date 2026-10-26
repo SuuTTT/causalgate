@@ -1,0 +1,4 @@
+_base_: ../model.yaml
+# Lead-time stress test: run with --override data.latency=1|2|3|5 --tag latency_<k>
+model:
+  tag: latency_sweep

@@ -1,0 +1,8 @@
+_base_: warn2trade.yaml
+# decision-focused: encoders -> policy trained only on the utility
+model:
+  tag: e2e_policy_raw
+  ablation: {raw_policy: true}
+train:
+  stages:
+    - {name: e2e, modules: [detector, policy], epochs: 16, lr: 3.0e-4, losses: {utility: 1.0, turnover: 0.001}}

@@ -1,0 +1,31 @@
+# B5 DCdetector (Yang et al., KDD 2023) - causalgate/baselines/b5_dcdetector.py, registered as cg_dcdetector.
+baseline: cg_dcdetector
+mode: causal
+published_threshold: combined_quantile  # official solver.py: np.percentile(train+test energy, 100 - anormly_ratio)
+anomaly_ratio: 0.01                   # official main.py default 4.0 %; scripts use the known per-dataset ratio (0.5-1 %)
+published_norm: train                 # official data_loader.py: StandardScaler on the train file; RevIN per window inside the model
+lookback: 96                          # main.py default win_size 100 (scripts: 105 / 90 / 60); must be divisible by every patch size (runner overrides with the dataset lookback)
+latency: 1
+hold_index: 2
+n_exec: 4
+w_max: 1.0
+bars_per_year: 252
+normaliser: {mode: welford, warmup: 60}
+gate: {type: delayed_aci, alpha: 0.05, gamma: 0.02, window: 500}
+model:
+  patch_sizes: [4, 6, 8]              # official scripts [3, 5, 7] @ win_size 105 (main.py default [5] @ 100); non-divisors of lookback are dropped
+  d_model: 64                         # official 256
+  n_heads: 1                          # official 1
+  e_layers: 2                         # official 3 (independent attention layers over the same embeddings)
+  dropout: 0.0
+  temperature: 50                     # official solver.py test(): temperature = 50
+  variant: official_code              # official_code: loss = prior - series, score = softmax(-discrepancy); paper: sum / +discrepancy
+  epochs: 3                           # official 10 with early stopping on the test loader (not replicated)
+  lr: 1.0e-4
+  lr_decay: true
+  batch_size: 128
+  seed: 0
+  use_official: true                  # use third_party/KDD2023-DCdetector when importable (needs einops, tkinter)
+smoke:
+  lookback: 48
+  model: {patch_sizes: [4, 8], d_model: 32, e_layers: 2, epochs: 2, lr: 1.0e-3, batch_size: 256}

@@ -1,0 +1,4 @@
+_base_: ../model.yaml
+model:
+  tag: ablation_no_abstain
+  ablation: {no_abstain: true}

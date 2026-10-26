@@ -1,0 +1,23 @@
+# D1 StockNet (Xu & Cohen, ACL 2018) -- causalgate loader causalgate/data/loaders/stocknet.py
+# Raw files: <root>/stocknet/price/raw/<TICKER>.csv + tweet/preprocessed/<TICKER>/<YYYY-MM-DD>; cache/stocknet_docs.npz optional.
+name: cg_stocknet
+root: data_raw
+subdir: stocknet
+variant: preprocessed            # tweet variant used by the prepare script (preprocessed | raw)
+start: "2014-01-01"
+end: "2016-01-01"
+tickers: null                    # null = every price/raw/*.csv (88 names)
+text_slots: 16                   # M most recent tweets per (date, ticker)
+lookback: 32
+horizons: [1, 2, 3, 5, 10]
+labels: {horizon: 5, k_ret: 2.5, k_vol: 2.0, window: 60, lead: 3}
+split: {train: 250, val: 50, test: 100, step: 100, embargo: 5}      # ~505 trading days -> one purged fold
+latency: 1
+bars_per_year: 252
+embed: {embedder: hash_tfidf, cutoff: "2015-01-01", dim: 32}        # cg_prepare_data.py --embed defaults
+pit:
+  fields: [avail_feat, avail_text, avail_label, universe]
+  avail_text: "first NYSE close (16:00 America/New_York) >= tweet created_at (UTC); after-close / weekend tweets -> next session"
+  avail_label: "t + max(5 + lead, max(horizons))"
+  universe: "price row exists (88-name list fixed ex post: survivorship bias recorded, not fixable)"
+  tradable: "volume > 0"

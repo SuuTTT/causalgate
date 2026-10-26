@@ -1,0 +1,25 @@
+# D3 FNSPID (Dong et al., KDD 2024; HF Zihan1004/FNSPID) -- causalgate/data/loaders/fnspid.py
+# Raw files: <root>/fnspid/Stock_price/full_history/<TICKER>.csv (+ Stock_news/nasdaq_exteral_data.csv for --embed); cache/fnspid_docs.npz optional
+name: cg_fnspid
+root: data_raw
+subdir: fnspid
+variant: full_history
+start: "2010-01-01"
+end: "2023-12-31"
+tickers: null                    # null = first max_assets price files alphabetically (an article-count ranking needs a 22 GB pass)
+max_assets: 100
+text_slots: 8
+text_fields: null                # null = Article_title + first summary column present (Lsa_summary, ...)
+lookback: 32
+horizons: [1, 2, 3, 5, 10, 20]
+labels: {horizon: 3, k_ret: 3.0, k_vol: 3.0, window: 60, lead: 3}
+split: {train: 1500, val: 250, test: 500, step: 500, embargo: 20}   # ~3500 trading days 2010-2023
+latency: 1
+bars_per_year: 252
+embed: {embedder: hash_tfidf, cutoff: "2018-01-01", dim: 32}
+pit:
+  fields: [avail_feat, avail_text, avail_label, universe]
+  avail_text: "first NYSE close >= article Date (UTC); after-close articles -> next session; row = article calendar date"
+  avail_label: "t + max(3 + lead, max(horizons))"
+  universe: "price row exists (full_history keeps delisted names; not an index membership)"
+  tradable: "volume > 0"

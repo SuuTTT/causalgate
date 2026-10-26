@@ -1,0 +1,4 @@
+_base_: ../model.yaml
+model:
+  tag: ablation_no_lob
+  ablation: {no_lob: true}

@@ -1,0 +1,29 @@
+_base_: default.yaml
+model:
+  name: warn2trade
+  tag: warn2trade
+  horizons: [1, 2, 3, 5, 10, 20]
+  taus: [0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95]
+  tde_hidden: 256
+  encoder:
+    d_model: 128
+    n_heads: 4
+    patch_len: 8
+    stride: 4
+    price_layers: 2
+    fusion_layers: 2
+    dropout: 0.1
+    text_decay: 0.1
+    use_text: true
+    use_graph: true
+    use_lob: true
+  policy:
+    hidden: 256
+    n_exec: 4
+    w_max: 1.0
+    cost_rt: 0.002     # plug-in policy prior round-trip cost
+    lam_cvar: 0.5
+    alpha: 0.1
+    kelly_frac: 0.25
+    a_min: 0.5
+  ablation: {}

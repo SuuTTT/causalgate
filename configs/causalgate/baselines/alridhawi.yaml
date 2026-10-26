@@ -1,0 +1,26 @@
+# B9 Al Ridhawi, Haj Ali, Al Osman, arXiv:2603.19136 (2026) -- causalgate/baselines/b9_alridhawi.py
+# Smoke sizes; the paper's sizes are in the comments. status = reimplemented-fallback (deterministic controller instead of SAC).
+name: cg_alridhawi
+mode: causal                          # published | causal
+lookback: 48                          # paper: 252-day input sequence
+latency: 1
+hold_index: 2
+n_exec: 4
+w_max: 1.0
+bars_per_year: 252
+seed: 0
+published_norm: train                 # Eq. 3: full-TRAINING-period statistics for validation / test (train-fitted, not global)
+published_threshold: train_quantile   # tau_0 = 95th percentile of the training-set reconstruction errors (Sec. III-C)
+tau_quantile: 0.95
+stable_quantile: 0.75                 # AE trained on days with VIX (proxy: 20-bar realised vol) below the training 75th percentile
+vol_bars: 20
+controller_online: true               # true: the controller keeps moving (tau, alpha) on the test period from the state (paper: frozen policy,
+                                      # state-dependent actions); false: tau, alpha frozen at their end-of-validation values
+controller: {alpha0: 0.5, eta_alpha: 0.05, k: 5, recent: 60}
+normaliser: {mode: welford, warmup: 60}
+gate: {type: delayed_aci, alpha: 0.05, gamma: 0.02, window: 500}
+ae: {bars: 5, hidden: [16, 8], latent: 4}   # paper: FC(64) - FC(32) - z(32) on the 17-dim daily feature vector
+predictor: {hidden: 8}                # paper: 6-layer node transformers, d_model 512, 8 heads
+epochs: 2                             # paper: 20 (AE), early stopping on validation loss
+lr: 1.0e-3
+batch_size: 256

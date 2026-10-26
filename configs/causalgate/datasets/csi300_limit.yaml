@@ -1,0 +1,27 @@
+# D6 CSI 300 limit-hit panel (causalgate/data/loaders/csi300_limit.py, registered cg_csi300_limit)
+name: cg_csi300_limit
+root: data_raw/csi300_limit
+lookback: 64
+latency: 1
+bars_per_year: 243
+horizons: [1, 2, 3, 5, 10, 20]
+split:
+  train: 1200
+  val: 200
+  test: 400
+  step: 400
+  embargo: 20
+# builder parameters (top-level: the whole file is passed as cfg to the builder, as for cg_planted)
+layout: auto                # auto | qlib | csv
+instruments: csi300         # qlib_cn/instruments/<instruments>.txt
+qlib_prices: adjusted       # adjusted ($close adjusted, $factor -> traded price) | raw
+limit_mode: auto            # auto | columns | exact | ratio
+limit_ratio_tol: 0.003
+lead: 3
+start: "2010-01-01"
+end: null
+pit:
+  fields: [avail_feat, avail_label, universe]
+  avail_label: "last limit bar of the run + 1 (run end first observable; NEVER if open at panel end); t + max(horizon) elsewhere"
+  universe: "as-of membership from the instruments date ranges (a change knowable at its start date, L6)"
+  tradable: "False on every limit-hit bar; direction in meta['limit_direction']"

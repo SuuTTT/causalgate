@@ -1,0 +1,23 @@
+# B6 MOMENT zero-shot anomaly detection (Goswami et al., ICML 2024) - causalgate/baselines/b6_moment.py, registered as cg_moment.
+# Requires `pip install momentfm` and the Hugging Face checkpoint; otherwise status = wrapper-needed and fit raises ImportError.
+baseline: cg_moment
+mode: causal
+published_threshold: best_f1_test     # tutorials/anomaly_detection.ipynb reports adjbestf1 (best point-adjusted F1 on the test labels)
+anomaly_ratio: null
+published_norm: train
+lookback: 512                         # informative only: ProtocolRunner.baseline_cfg overrides it with the dataset lookback; MOMENT left-pads to 512 with input_mask = 0
+latency: 1
+hold_index: 2
+n_exec: 4
+w_max: 1.0
+bars_per_year: 252
+normaliser: {mode: welford, warmup: 60}
+gate: {type: delayed_aci, alpha: 0.05, gamma: 0.02, window: 500}
+cutoff_date: "2024-02-01"             # L8: MOMENT-1 release (read by B6.__init__ into the run result; scripts/cg_audit.py still reads the class attribute); the Time Series Pile contents must be checked against each fold's test start
+model:
+  hf_name: AutonLab/MOMENT-1-large    # MOMENT-1-base / MOMENT-1-small are the smaller checkpoints
+  seq_len: 512
+  batch_size: 64
+smoke:
+  lookback: 48
+  model: {hf_name: AutonLab/MOMENT-1-small, batch_size: 32}

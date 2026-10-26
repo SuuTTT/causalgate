@@ -1,0 +1,4 @@
+_base_: ../model.yaml
+model:
+  tag: ablation_plugin_policy
+  ablation: {plugin_policy: true}

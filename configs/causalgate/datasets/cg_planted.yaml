@@ -1,0 +1,17 @@
+# A2 planted-leak testbed (synthetic; ground truth for E4). Not a benchmark result.
+name: cg_planted
+seed: 1
+T: 3000
+N: 8
+event_rate: 0.006
+lead: 3
+news_lag: 2
+text_snr: 2.0
+regime_vol_mult: [1.0, 3.0]
+regime_stay: [0.985, 0.95]
+horizons: [1, 2, 3, 5, 10]
+lookback: 48
+latency: 1
+bars_per_year: 252
+split: {train: 1200, val: 200, test: 500, step: 500, embargo: 10}
+pit: [avail_feat, avail_label, avail_text, universe]

@@ -1,0 +1,15 @@
+# Overlay (no _base_): CSRC administrative sanctions on the FULL A-share universe (delisting-inclusive daily bars from
+# Tushare / AkShare / CSMAR, incl. ST, ChiNext, STAR, BSE). Anchors built with scripts/build_anchors.py from a
+# double-verified sheet (docs/sparse_anchor_sheet_template.csv). Primary benchmark.
+experiment: {name: csrc_sanctions}
+dataset:
+  name: daily_bars
+  path: data_raw/ashare/daily_bars.csv
+  market: cn
+  start: "2010-01-01"
+  min_obs: 250
+  capital_per_slot: 1.0e+5
+  anchors: {path: data_raw/anchors/csrc_sanction_anchors.csv}
+label_budget: {lead: 5, neg_margin: 60, n_cal: 0.1, cal_block: 10}
+splits: {train: 1215, val: 243, test: 243, step: 243, purge: 25, embargo: 5, max_folds: null}   # 5y / 1y / 1y rolling
+eval: {borrow_bps_annual: 800}       # A-share securities lending is scarce and expensive; overlay (long-only) is the headline

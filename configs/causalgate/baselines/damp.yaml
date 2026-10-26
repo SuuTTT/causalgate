@@ -1,0 +1,26 @@
+# B3 DAMP (Lu, Wu, Keogh, KDD 2022) - causalgate/baselines/b3_damp.py, registered as cg_damp.
+baseline: cg_damp
+mode: causal
+published_threshold: train_quantile   # DAMP publishes no threshold (discord ranking); a causal reference -> train quantile
+anomaly_ratio: 0.05
+published_norm: train                 # immaterial: every subsequence is z-normalised (MASS); only the warm-up abstention differs
+lookback: 64                          # window-local fallback needs lookback >= 2 m
+latency: 1
+hold_index: 2
+n_exec: 4
+w_max: 1.0
+bars_per_year: 252
+normaliser: {mode: welford, warmup: 60}
+gate: {type: delayed_aci, alpha: 0.05, gamma: 0.02, window: 500}
+model:
+  m: 16                               # subsequence length (official demo 100 on a long univariate series; > 10 required by the port)
+  prefix_mult: 16                     # brute-force prefix = 16 m queries after t_start (damp.py ~L95)
+  init_mult: 8                        # first backward window X = 2 ** nextpow2(8 m) (damp.py ~L152)
+  exact: false                        # true = full left matrix profile (no best-so-far early stop)
+  max_lookback: null                  # cap on the backward search (null = whole past, as official)
+  features: all                       # DAMP is univariate: per-feature profiles are averaged; or a list of feature indices
+  use_series_profile: true            # full-series DAMP on the panel streams; false = window-local LeftMatrixProfileScorer only
+  use_official: true                  # use third_party/DAMP/damp.py DAMP_2_0 (lookahead = 0) when importable
+smoke:
+  lookback: 48
+  model: {m: 8}

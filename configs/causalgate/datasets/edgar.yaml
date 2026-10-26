@@ -1,0 +1,30 @@
+# D4 SEC EDGAR 10-K/10-Q + AAER labels + Yahoo daily prices (causalgate/data/loaders/edgar.py, registered cg_edgar)
+# Time axis = trading days; decision points = filing bars (meta['decision_mask']). Windows are smaller than the daily
+# default because only a few thousand filing bars carry a label.
+name: cg_edgar
+root: data_raw/edgar
+lookback: 32
+latency: 1
+bars_per_year: 252
+horizons: [1, 3, 5, 10, 20, 60]
+split:
+  train: 750
+  val: 125
+  test: 250
+  step: 250
+  embargo: 20
+# builder parameters (top-level: the whole file is passed as cfg to the builder, as for cg_planted)
+label_source: aaer          # aaer | restatement (restatements.csv, Audit Analytics, LICENSED, never required)
+forms: ["10-K", "10-Q"]
+lead: 0
+label_span_bars: 0
+clean_label_lag_bars: 60    # "no AAER" rows: knowable after this many bars (optimistic convention; raise to probe L5)
+text_slots: 2
+text_max_age_bars: 5
+graph: true
+graph_k: 8
+pit:
+  fields: [avail_feat, avail_text, avail_label, avail_graph, universe]
+  avail_label: "AAER release bar for misstate = 1 (NEVER when the release date is missing); t + clean_label_lag_bars otherwise"
+  avail_text: "first session close at/after the EDGAR acceptance datetime"
+  universe: "has a price path (no survivorship list for this slot)"

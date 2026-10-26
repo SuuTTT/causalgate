@@ -1,0 +1,5 @@
+_base_: warn2trade.yaml
+# drop text
+model:
+  tag: no_text
+  ablation: {no_text: true}

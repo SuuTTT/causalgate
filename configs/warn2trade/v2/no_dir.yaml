@@ -1,0 +1,12 @@
+_base_: warn2trade.yaml
+# no direction auxiliary loss
+model:
+  tag: no_dir
+  ablation: {}
+train:
+  loss: {dir: 0.0}
+  stages:
+    - {name: detect, modules: [detector], epochs: 4, lr: 3.0e-4, losses: {det: 1.0, svdd: 0.1}}
+    - {name: extrap, modules: [detector, extrapolator], epochs: 6, lr: 5.0e-4, losses: {det: 1.0, imp: 1.0, liq: 0.5, peak: 0.5}}
+    - {name: policy, modules: [policy], epochs: 6, lr: 1.0e-3, detach_upstream: true, losses: {utility: 1.0, turnover: 0.001}}
+    - {name: e2e, modules: [detector, extrapolator, policy], epochs: 4, lr: 1.0e-4, losses: {det: 1.0, svdd: 0.1, imp: 1.0, liq: 0.5, peak: 0.5, utility: 1.0, turnover: 0.001}}

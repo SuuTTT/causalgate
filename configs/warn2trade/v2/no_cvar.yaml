@@ -1,0 +1,7 @@
+_base_: warn2trade.yaml
+# utility = expected pnl only (no downside-risk term); tag kept as no_cvar
+model:
+  tag: no_cvar
+  ablation: {}
+train:
+  loss: {gamma: 0.0, lam_cvar: 0.0}

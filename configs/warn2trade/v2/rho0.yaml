@@ -1,0 +1,7 @@
+_base_: warn2trade.yaml
+# plain (class-weighted) BCE instead of executable-alpha-weighted BCE; everything else identical
+model:
+  tag: rho0
+  ablation: {}
+train:
+  loss: {rho: 0.0}

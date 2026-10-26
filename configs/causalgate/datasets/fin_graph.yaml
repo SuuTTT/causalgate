@@ -1,0 +1,27 @@
+# D10 Elliptic++ transaction graph on hourly BTC bars (causalgate/data/loaders/fin_graph.py, registered cg_fin_graph)
+name: cg_fin_graph
+root: data_raw/fin_graph
+lookback: 48
+latency: 1
+bars_per_year: 8760
+horizons: [1, 2, 4, 8, 24, 48]
+split:
+  train: 4000
+  val: 500
+  test: 1000
+  step: 1000
+  embargo: 48
+# builder parameters (top-level: the whole file is passed as cfg to the builder, as for cg_planted)
+assets: [BTC]
+timestamp_is: open          # open (exchange klines) | close
+bar_hours: 1
+label_lag_bars: 168         # 24 * 7: the paper's sensitivity axis (see pit.label_lag)
+illicit_share_thr: 0.05
+adv_window: 168
+pit:
+  fields: [avail_feat, avail_label, avail_graph, universe]
+  label_lag:
+    axis: label_lag_bars
+    grid: [0, 24, 168, 720]   # 0 h (leaky), 1 d, 1 w (default), 30 d
+  avail_label: "t + label_lag_bars for every row (retrospective illicit labels)"
+  avail_graph: "slot 0 structural: t ; slot 1 label-derived: t + label_lag_bars"

@@ -1,0 +1,4 @@
+name: stocknet
+root: data_raw
+horizons: [1, 2, 3, 5, 10, 20]
+split: {train: 300, val: 40, test: 60, step: 60, embargo: 5}     # 2014-2015 daily, ~500 bars

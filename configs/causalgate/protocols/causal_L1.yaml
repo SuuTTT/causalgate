@@ -1,0 +1,30 @@
+name: causal+L1
+normalisation: global
+threshold: delayed_aci
+model_selection: val
+point_adjust: false
+label_join: avail_time
+universe: as_of
+fill: latency
+pretrained_check: true
+purge: true
+embargo: true
+detection_only: false
+seeds:
+- 42
+- 2024
+- 2025
+- 2026
+cost_grid_bps:
+- 1.0
+- 5.0
+- 10.0
+- 15.0
+- 30.0
+train_cost_bps: 5.0
+min_latency: 1
+hash: df87405039b20120
+offline_channels:
+- L1
+_note: mirror of causalgate/eval/protocols.py (source of truth); regenerate with `python3
+  -c 'from causalgate.eval.protocols import write_mirrors; write_mirrors()'` and re-freeze

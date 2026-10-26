@@ -1,0 +1,33 @@
+# B2 Anomaly Transformer (Xu et al., ICLR 2022) - causalgate/baselines/b2_anomaly_transformer.py, registered as cg_anomaly_transformer.
+# Top-level keys are read by causalgate.baselines.common.ScoreToTradeBaseline; `model:` by the wrapper; `smoke:` is a deep-merge
+# override used by tests/causalgate_parts/test_baselines_official.py (tiny sizes, <= 25 s CPU per fit + predict).
+baseline: cg_anomaly_transformer
+mode: causal                          # published | causal
+published_threshold: combined_quantile  # official solver.py: np.percentile(train+test energy, 100 - anormly_ratio)
+anomaly_ratio: 0.01                   # official main.py default 4.0 %; the SMD/MSL/SMAP/PSM scripts use 0.5-1 % (= the known test ratio)
+published_norm: train                 # official data_loader.py: StandardScaler fitted on the train file (norm_rows = train fold)
+lookback: 100                         # official win_size 100 (runner overrides with the dataset lookback)
+latency: 1
+hold_index: 2
+n_exec: 4
+w_max: 1.0
+bars_per_year: 252
+normaliser: {mode: welford, warmup: 60}
+gate: {type: delayed_aci, alpha: 0.05, gamma: 0.02, window: 500}
+model:
+  d_model: 64                         # official 512 (compact fallback)
+  n_heads: 4                          # official 8
+  e_layers: 2                         # official 3
+  d_ff: 128                           # official 512
+  dropout: 0.0
+  k: 3.0                              # official --k 3 (association-discrepancy weight)
+  temperature: 50                     # official solver.py test(): temperature = 50
+  epochs: 3                           # official 10 with early stopping on the test loader (not replicated)
+  lr: 1.0e-4
+  lr_decay: true                      # official adjust_learning_rate: lr * 0.5 ** epoch
+  batch_size: 256                     # official 1024
+  seed: 0
+  use_official: true                  # use third_party/Anomaly-Transformer when importable (CUDA only, see THIRD_PARTY.md)
+smoke:
+  lookback: 48
+  model: {d_model: 16, n_heads: 2, e_layers: 1, d_ff: 32, epochs: 1, lr: 1.0e-3, batch_size: 256}

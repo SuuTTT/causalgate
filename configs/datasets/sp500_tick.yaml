@@ -1,0 +1,5 @@
+name: sp500_tick
+root: data_raw
+bar: 1min
+horizons: [1, 2, 5, 10, 30, 60]
+split: {train: 60000, val: 7800, test: 15600, step: 15600, embargo: 390}

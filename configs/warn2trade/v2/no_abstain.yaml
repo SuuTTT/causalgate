@@ -1,0 +1,5 @@
+_base_: warn2trade.yaml
+# no abstain gate
+model:
+  tag: no_abstain
+  ablation: {no_abstain: true}

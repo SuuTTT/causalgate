@@ -1,0 +1,10 @@
+_base_: warn2trade.yaml
+# open loop done right: same detector + TDE, plain BCE, closed-form rule, no utility training
+model:
+  tag: detect_then_plugin
+  ablation: {plugin_policy: true}
+train:
+  loss: {rho: 0.0}
+  stages:
+    - {name: detect, modules: [detector], epochs: 4, lr: 3.0e-4, losses: {det: 1.0, dir: 1.0, svdd: 0.1}}
+    - {name: extrap, modules: [detector, extrapolator], epochs: 6, lr: 5.0e-4, losses: {det: 1.0, dir: 1.0, imp: 1.0, liq: 0.5, peak: 0.5}}

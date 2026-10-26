@@ -1,0 +1,3 @@
+_base_: ../baselines/causalgate.yaml
+scorer: {type: lmp, m: 8}
+ablation: scorer_lmp

@@ -1,0 +1,27 @@
+# D8 Qlib daily bundle (US S&P 500 / CN CSI 300) with Alpha158-lite RAW features -- causalgate/data/loaders/qlib_alpha158.py
+# Raw files: <root>/qlib_us/{calendars/day.txt, instruments/sp500.txt, features/<inst>/<field>.day.bin} (region cn: qlib_cn + csi300.txt)
+name: cg_qlib_alpha158
+root: data_raw
+region: us                       # us | cn (sets subdir, universe file, session close, limit rule defaults)
+subdir: null                     # null = qlib_us / qlib_cn by region
+variant: alpha158_lite
+universe: null                   # null = sp500 (us) / csi300 (cn): instruments/<universe>.txt gives the as-of membership ranges
+instruments: null                # explicit list overrides the universe file order
+max_assets: 500
+start: "2008-01-01"
+end: "2020-12-31"
+alpha158: lite                   # lite (32 Alpha158 expressions, causal, no processors) | none | full (needs pyqlib; hook)
+alpha_windows: [5, 10, 20, 60]
+limit_rule: null                 # null = none (us) / cn_10pct (cn)
+limit_pct: 0.10
+lookback: 32
+horizons: [1, 2, 3, 5, 10, 20]
+labels: {horizon: 5, k_ret: 3.0, k_vol: 3.0, window: 60, lead: 3}
+split: {train: 1250, val: 250, test: 500, step: 500, embargo: 20}   # ~3270 trading days 2008-2020
+latency: 1
+bars_per_year: 252
+pit:
+  fields: [avail_feat, avail_label, universe]
+  avail_label: "t + max(5 + lead, max(horizons))"
+  universe: "as-of membership from instruments/<universe>.txt effective-date ranges (delisted names kept until range end)"
+  tradable: "close finite, volume > 0, not limit-hit (cn_10pct rule; the bundle has no suspension/limit flags)"

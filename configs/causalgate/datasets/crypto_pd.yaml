@@ -1,0 +1,31 @@
+# D5 Telegram pump-and-dump (La Morgia et al., ACM TOIT 2023, arXiv:2105.00733) -- causalgate/data/loaders/crypto_pd.py
+# Raw files: <root>/crypto_pd/pump_telegram.csv + klines/<SYMBOL>BTC.csv (Binance 1m); messages.csv optional (--embed); cache/crypto_pd_docs.npz optional
+name: cg_crypto_pd
+root: data_raw
+subdir: crypto_pd
+variant: binance_1m
+exchange: Binance                # pumps on other exchanges are skipped (no klines); "all" keeps every row that has klines
+quote: BTC
+announce_tz: UTC                 # zone of the date/hour columns (assumption; the authors report UTC)
+pre_minutes: 360                 # window = [announcement - pre, announcement + post]; T = pre + post + 1
+post_minutes: 360
+lead: 3                          # label 1 from announcement - lead to the peak
+peak_window_minutes: 60          # derived peak = argmax high within this window when the table has no peak column
+end_minutes_after_peak: 60       # avail_label = peak + this (event has played out)
+max_pumps: null
+text_slots: 4
+lookback: 60
+horizons: [1, 2, 5, 10, 30, 60]
+split: {train: 200000, val: 40000, test: 80000, step: 80000, embargo: 2000}   # bars of the calendar series (~513 pumps x 921 bars)
+layout: calendar                 # calendar (default, causal ordering) | stacked (one column per pump; NOT time-aligned)
+gap_bars: 200
+split_axis: time               # columns are pumps sorted by announcement: walk forward chronologically over ASSETS
+latency: 1
+bars_per_year: 525600
+embed: {embedder: hash_tfidf, cutoff: "2019-01-01", dim: 32}
+pit:
+  fields: [avail_feat, avail_text, avail_label, universe]
+  avail_text: "bar containing the Telegram message (announcement at row pre_minutes)"
+  avail_label: "event end bar = peak + end_minutes_after_peak (peak knowable only after the dump); bars_to_peak exact, negative after the peak"
+  universe: "kline exists at that bar"
+  tradable: "volume > 0 (zero-volume minutes untradable)"

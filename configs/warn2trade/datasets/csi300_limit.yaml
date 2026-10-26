@@ -1,0 +1,13 @@
+# CSI 300 limit-up / limit-down events (Qlib CN community bundle). See warn2trade/data/datasets/csi300_limit.py.
+name: csi300_limit
+root: data_raw
+date_start: null        # null = 2010-01-01 (first bar 2010-01-04)
+date_end: null          # null = bundle end (2026-09-30 for release 2026-10-05)
+max_assets: null        # smoke variant: e.g. 40 (first k codes, sorted)
+lead: 3
+late_window: 5
+stale_bars: 20
+tail: 30
+guard_lookback: 64      # must be >= data.lookback used for training
+horizons: [1, 2, 3, 5, 10, 20]
+split: {train: 750, val: 120, test: 240, step: 240, embargo: 10}

@@ -1,0 +1,10 @@
+_base_: warn2trade.yaml
+# detector never sees impact or utility gradients
+model:
+  tag: frozen_detector
+  ablation: {}
+train:
+  stages:
+    - {name: detect, modules: [detector], epochs: 4, lr: 3.0e-4, losses: {det: 1.0, dir: 1.0, svdd: 0.1}}
+    - {name: extrap, modules: [extrapolator], epochs: 6, lr: 5.0e-4, detach_upstream: true, losses: {imp: 1.0, liq: 0.5, peak: 0.5}}
+    - {name: policy, modules: [policy], epochs: 10, lr: 1.0e-3, detach_upstream: true, losses: {utility: 1.0, turnover: 0.001}}

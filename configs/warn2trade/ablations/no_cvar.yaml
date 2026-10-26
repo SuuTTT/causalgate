@@ -1,0 +1,6 @@
+_base_: ../model.yaml
+# Utility reduces to plain expected PnL (no downside / CVaR penalty).
+model:
+  tag: ablation_no_cvar
+train:
+  loss: {lam_down: 0.0, lam_cvar: 0.0}

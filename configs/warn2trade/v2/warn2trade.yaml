@@ -1,0 +1,16 @@
+_base_: ../model.yaml
+# Warn2Trade v2: corrected protocol (fill-bar targets, base-rate-weighted utility, warning-conditional metrics, netted portfolio).
+model:
+  name: warn2trade_v2
+  tag: warn2trade
+eval:
+  participation_cap: 0.1
+data:
+  num_workers: 4
+  max_train_samples: 250000
+  max_val_select: 60000
+train:
+  batch_size: 512
+  loss:
+    gamma: 0.1        # semivariance risk aversion, PnL in percent units
+    lam_cvar: 0.0     # CVaR stays a reported metric; >0 adds it to the training utility

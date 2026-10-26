@@ -1,0 +1,29 @@
+# B4 MemStream (Bhatia et al., WWW 2022) - causalgate/baselines/b4_memstream.py, registered as cg_memstream.
+baseline: cg_memstream
+mode: causal
+published_threshold: train_quantile   # MemStream publishes ROC-AUC of raw scores (no threshold); causal reference -> train quantile
+anomaly_ratio: 0.05
+published_norm: train                 # the official standardisation uses the memory contents (replicated on top of the scaffold's L1)
+lookback: 64
+latency: 1
+hold_index: 2
+n_exec: 4
+w_max: 1.0
+bars_per_year: 252
+normaliser: {mode: welford, warmup: 60}
+gate: {type: delayed_aci, alpha: 0.05, gamma: 0.02, window: 500}
+model:
+  record_bars: 1                      # record = last k bars of the normalised window flattened (1 = one multivariate observation)
+  memory_len: 2048                    # official --memlen 2048
+  beta: null                          # official --beta (0.1 default, tuned per dataset); null -> beta_quantile of the initial-memory scores
+  beta_quantile: 0.95
+  lr: 1.0e-2                          # official --lr 0.01
+  epochs: 5000                        # official --epochs 5000 (full-batch on the initial memory)
+  noise: 1.0e-3                       # official: enc(new + 0.001 * randn)
+  init_normal_only: null              # null: official `init_data = numeric[labels == 0][:N]` on the TRAIN fold in published mode only
+  published_rule: beta                # published alarm rule: beta = not admitted to memory (score > beta, the algorithm's own threshold);
+                                      # quantile = the scaffold's `published_threshold` on the streamed train scores
+  seed: 0
+smoke:
+  lookback: 48
+  model: {memory_len: 256, epochs: 200}

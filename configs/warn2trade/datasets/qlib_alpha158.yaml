@@ -1,0 +1,16 @@
+# US S&P 500 Alpha158-lite (official Qlib US 1d bundle, frozen at 2020-11-10). See warn2trade/data/datasets/qlib_alpha158.py.
+name: qlib_alpha158
+root: data_raw
+date_start: null        # null = 2000-01-01 (first bar 2000-01-03)
+date_end: null          # null = bundle end (2020-11-10)
+max_assets: null
+lead: 3
+label_horizon: 5
+k_ret: 3.0
+k_vol: 3.0
+stale_bars: 20
+tail: 30
+guard_lookback: 64
+borrow_bps_per_bar: 0.25   # 63 bps / year over 252 sessions
+horizons: [1, 2, 3, 5, 10, 20]
+split: {train: 750, val: 120, test: 240, step: 240, embargo: 10}

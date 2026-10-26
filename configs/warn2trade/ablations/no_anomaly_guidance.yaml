@@ -1,0 +1,4 @@
+_base_: ../model.yaml
+model:
+  tag: ablation_no_anomaly_guidance
+  ablation: {no_anomaly_guidance: true}

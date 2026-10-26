@@ -1,0 +1,6 @@
+name: crypto_pd
+root: data_raw
+bar: 1min
+window_hours: 6
+horizons: [1, 2, 5, 10, 30, 60]
+split: {train: 60000, val: 10000, test: 20000, step: 20000, embargo: 360}

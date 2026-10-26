@@ -1,0 +1,31 @@
+# D7 S&P 500 1-minute bars + LULD halts + circuit breakers (causalgate/data/loaders/sp500_tick.py, registered cg_sp500_tick)
+name: cg_sp500_tick
+root: data_raw/sp500_tick
+lookback: 60
+latency: 1
+bars_per_year: 98280          # 252 * 390 regular-hours minutes
+horizons: [1, 2, 5, 10, 30, 60]
+split:
+  train: 20000
+  val: 3000
+  test: 5000
+  step: 5000
+  embargo: 390
+# builder parameters (top-level: the whole file is passed as cfg to the builder, as for cg_planted)
+tz: America/New_York
+timestamp_is: start         # start (Polygon aggregates) | close
+bar_minutes: 1
+regular_hours_only: true
+ffill_within_session: true
+post_halt_minutes: 5
+lead: 3
+mfc_move: 0.008             # minute-bar adaptation of Johnson et al. 2013 (assumption, see module docstring)
+mfc_max_bars: 3
+mfc_revert_frac: 0.5
+mfc_revert_window: 10
+adv_window: 390
+pit:
+  fields: [avail_feat, avail_label, universe]
+  avail_label: "reversion bar of the mini-flash-crash (future-defined label, L4); t + max(horizon) elsewhere"
+  universe: "as-of constituents.csv (effective at the add date, L6)"
+  tradable: "False inside LULD halts + 5 min after, inside circuit breakers, on missing bars (L7)"

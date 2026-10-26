@@ -1,0 +1,31 @@
+# D9 WallStreetBets squeeze panel (causalgate/data/loaders/wsb_squeeze.py, registered cg_wsb_squeeze)
+name: cg_wsb_squeeze
+root: data_raw/wsb_squeeze
+lookback: 32
+latency: 1
+bars_per_year: 252
+horizons: [1, 2, 3, 5, 10, 20]
+split:
+  train: 180
+  val: 40
+  test: 60
+  step: 60
+  embargo: 10
+# builder parameters (top-level: the whole file is passed as cfg to the builder, as for cg_planted)
+si_join: publication        # publication (causal) | settlement (leaky L5 convention, avail_feat stamped)
+si_publication_lag_days: 14 # used only when short_interest.csv has no publication column
+post_tz: UTC
+text_slots: 16
+text_max_age_bars: 5
+squeeze_si_ratio: 0.40
+squeeze_ret_5d: 0.50
+peak_window: 10
+lead: 5
+restricted: [GME, AMC, BB, KOSS, EXPR, NOK, NAKD, TR, TRVG, BBBY, AAL, SNDL]   # public reporting at the time; re-verify
+restricted_window: ["2021-01-28", "2021-02-04"]
+pit:
+  fields: [avail_feat, avail_text, avail_label, universe]
+  avail_feat: "publication bar of the short-interest value (stamped only under si_join = settlement)"
+  avail_text: "first session close at or after the post's creation timestamp; crawl-time score/comms_num excluded from the default metadata text block"
+  avail_label: "onset + peak_window for squeeze rows; t + max(horizon) elsewhere"
+  tradable: "False on broker-restricted days for the restricted list"

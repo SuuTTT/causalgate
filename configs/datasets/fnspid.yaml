@@ -1,0 +1,5 @@
+name: fnspid
+root: data_raw
+horizons: [1, 2, 3, 5, 10, 20]
+max_docs: 8
+split: {train: 1500, val: 250, test: 250, step: 250, embargo: 10}
